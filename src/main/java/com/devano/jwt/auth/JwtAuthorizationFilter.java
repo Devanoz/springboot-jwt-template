@@ -12,12 +12,15 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,9 +49,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             if(claims != null & jwtUtil.validateClaims(claims)){
                 String email = claims.getSubject();
+                Collection<GrantedAuthority> authorities = new ArrayList<>();
+
+                String roles = claims.get("role",String.class);
+                authorities.add(new SimpleGrantedAuthority(roles));
+
                 System.out.println("email : "+email);
                 Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(email,"",new ArrayList<>());
+                        new UsernamePasswordAuthenticationToken(email,null,authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
