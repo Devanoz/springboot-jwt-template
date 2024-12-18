@@ -50,6 +50,19 @@ public class SecurityConfig {
 
 
     @Bean
+    @Primary
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, exception) -> {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            try (PrintWriter writer = response.getWriter()) {
+                writer.write("{\"error\": \""+ exception.getMessage() +"\"}");
+            }
+        };
+    }
+
+
+    @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
