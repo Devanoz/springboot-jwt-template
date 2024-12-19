@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
-@Table(name = "user",schema = "public")
+@Table(name = "users",schema = "public")
 @Data
 public class User implements UserDetails {
     @Id
@@ -34,6 +34,11 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.getAuthority()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override
