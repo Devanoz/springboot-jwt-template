@@ -1,43 +1,46 @@
 package com.devano.jwt.service.impl;
 
-import com.devano.jwt.dto.GlobalResponse;
 import com.devano.jwt.dto.auth.register.RegisterRequestDto;
+import com.devano.jwt.dto.auth.register.RegisterResponseDto;
 import com.devano.jwt.exception.UserNotFoundException;
 import com.devano.jwt.model.Role;
 import com.devano.jwt.model.User;
 import com.devano.jwt.repository.RoleRepository;
 import com.devano.jwt.repository.UserRepository;
 import com.devano.jwt.service.UserService;
-import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder bCryptPasswordEncoder;
     @Override
-    public GlobalResponse<Object> register(RegisterRequestDto registerRequestDto) {
+    public RegisterResponseDto register(RegisterRequestDto registerRequestDto) {
         Optional<Role> optionalRole = roleRepository.findById(registerRequestDto.getRoleId());
 
+        User savedUser;
         if(optionalRole.isPresent()){
             Role role = optionalRole.get();
             User user = new User();
             user.setEmail(registerRequestDto.getEmail());
-            user.setUsername(registerRequestDto.getUsername());
+            user.setUsername(registerRequestDto.getEmail());
             String userPassword = registerRequestDto.getPassword();
             user.setPassword(bCryptPasswordEncoder.encode(userPassword));
             user.setRole(role);
-            userRepository.save(user);
+            savedUser = userRepository.save(user);
         }else{
-            throw new UserNotFoundException("Role tidak ditemukan");
+            throw new UserNotFoundException("User not found");
         }
 
-        return GlobalResponse.success("Registrasi berhasil",null);
+        return RegisterResponseDto.builder()
+                .email(savedUser.getEmail())
+                .role(savedUser.getRole().getName())
+                .build();
     }
 }
