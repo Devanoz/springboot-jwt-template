@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -41,7 +40,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secrets);
     }
 
-    public String getUsername(String token) {
+    public String getEmail(String token) {
         return getClaims(token).getSubject();
     }
 
