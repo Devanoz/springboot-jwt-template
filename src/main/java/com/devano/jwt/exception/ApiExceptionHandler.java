@@ -2,7 +2,7 @@ package com.devano.jwt.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -19,15 +19,16 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(e.getHttpStatus().value()).body(resposne);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiExceptionResponse> handleHibernateValidation(MethodArgumentNotValidException e) {
-        ApiExceptionResponse errorResponse = ApiExceptionResponse.builder().errorMessages(List.of(e.getMessage())).build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiExceptionResponse> handler(BadCredentialsException e) {
+        List<String> errorMessages = new ArrayList<>(Collections.singletonList(e.getMessage()));
+        ApiExceptionResponse response = ApiExceptionResponse.builder().errorMessages(errorMessages).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiExceptionResponse> handler(Exception e) {
         ApiExceptionResponse exception = ApiExceptionResponse.builder().errorMessages(List.of(e.getMessage())).build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception);
     }
 }
