@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-    @GetMapping("/test")
-    public Object testUser(){
-        return "user tested";
+    @GetMapping("/protected")
+    public String testUser(){
+        return "user protected resources";
     }
 }
