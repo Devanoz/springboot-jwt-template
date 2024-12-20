@@ -19,7 +19,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email,password);
         Authentication authentication = authenticationManager.authenticate(token);
         if(!authentication.isAuthenticated()) {
-            throw new BadCredentialsException("Wrong username or password");
+            throw new BadCredentialsException("Bad credentials");
         }
         User user = (User) authentication.getPrincipal();
         return jwtService.generateToken(user.getEmail(),user.getRole().getName());
